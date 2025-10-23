@@ -1,8 +1,73 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import GalaxyBackground from './GalaxyBackground';
+
+function LazyVideoCard({ videoId, title, description }) {
+  const [playing, setPlaying] = useState(false);
+
+  const thumbnail = `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`;
+
+  return (
+    <div className="video-card">
+      <div className="video-embed">
+        {!playing ? (
+          <button
+            className="video-thumb-btn"
+            aria-label={`Play ${title}`}
+            onClick={() => setPlaying(true)}
+          >
+            <img src={thumbnail} alt={`Thumbnail for ${title}`} className="video-thumb" />
+            <div className="play-overlay" aria-hidden>
+              <div className="play-icon">▶</div>
+            </div>
+          </button>
+        ) : (
+          <iframe
+            title={title}
+            src={`https://www.youtube.com/embed/${videoId}?rel=0`}
+            frameBorder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+          />
+        )}
+      </div>
+      <div className="video-meta">
+        <h4>{title}</h4>
+        {description && <p className="video-desc">{description}</p>}
+      </div>
+    </div>
+  );
+}
 
 function MainPage({ user, onLogout }) {
+  useEffect(() => {
+    // When the browser back button is pressed (popstate), treat it as logout
+    const handlePopState = () => {
+      // Clear auth and notify parent
+      try {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+      } catch (e) {
+        // ignore
+      }
+      onLogout();
+    };
+
+    window.addEventListener('popstate', handlePopState);
+
+    // Also clear on unmount for safety
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+      try {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+      } catch (e) {
+        // ignore
+      }
+    };
+  }, [onLogout]);
   return (
     <div className="main-page">
+      <GalaxyBackground starCount={160} shapeCount={10} />
       <header className="header">
         <h1>DevOps Portal</h1>
         <div className="user-info">
@@ -80,6 +145,15 @@ function MainPage({ user, onLogout }) {
               <li><strong>Operate:</strong> Manage and maintain the application</li>
               <li><strong>Monitor:</strong> Track performance and gather feedback</li>
             </ul>
+          </div>
+
+          {/* Video card: About DevOps video */}
+          <div className="devops-section">
+            <LazyVideoCard
+              videoId="Xrgk023l4lI"
+              title="About DevOps — DevOps Introduction"
+              description="Short intro to DevOps practices and why they matter. (Click to play)"
+            />
           </div>
         </div>
       </div>

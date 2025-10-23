@@ -1,7 +1,13 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+// Prefer injected REACT_APP_API_URL (set at build time). If it's provided as an
+// empty string the app will use relative paths (e.g. `/api/...`) which is ideal
+// for Kubernetes deployments behind an Ingress. Only fall back when the variable
+// is strictly undefined.
+const API_URL = typeof process.env.REACT_APP_API_URL !== 'undefined'
+  ? process.env.REACT_APP_API_URL
+  : 'http://localhost:5001';
 
 function Login({ onLoginSuccess, onSwitchToSignup }) {
   const [username, setUsername] = useState('');
@@ -30,6 +36,10 @@ function Login({ onLoginSuccess, onSwitchToSignup }) {
 
   return (
     <div className="auth-container">
+      <div className="login-hero">
+        <h1 className="login-welcome">Welcome to DevOps World</h1>
+        <div className="login-sub">Powering modern delivery — v1.0.0.0 • Author: Akash</div>
+      </div>
       <h2>Login</h2>
       {error && <div className="error-message">{error}</div>}
       <form onSubmit={handleSubmit}>
@@ -63,6 +73,7 @@ function Login({ onLoginSuccess, onSwitchToSignup }) {
         Don't have an account?
         <button onClick={onSwitchToSignup}>Sign up</button>
       </div>
+      <div className="auth-footer">v1.0.0.0 — Author: Akash</div>
     </div>
   );
 }

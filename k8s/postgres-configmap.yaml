@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-config
+  namespace: devops-app
+  labels:
+    app: postgres
+data:
+  POSTGRES_DB: authdb
+  POSTGRES_USER: postgres
